@@ -4,23 +4,25 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
+require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
 
-mongoose.connect('mongodb://localhost:27017/ecommerce', {
+mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
+    useUnifiedTopology: true
 });
 
-// Middleware
-app.use(cors()); // Enable CORS for all routes
+app.use(cors()); 
 app.use(bodyParser.json());
-app.use(morgan('combined')); // 'combined' is one of the predefined formats, logging more detailed info
+app.use(morgan('combined'));
 
-app.use('/products', productRoutes);
+app.use('/api/v1/products', productRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.use('*', (req, res) => {
+    res.status(404).json({msg: "API endpoint not found!"})
+})
+
+app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
 });

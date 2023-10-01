@@ -1,10 +1,25 @@
 const express = require('express');
+const { body, validationResult } = require('express-validator');
 const Product = require('../models/Product');
 
 const router = express.Router();
 
+const productValidationRules = [
+    body('name').isString().withMessage('Name must be a string').notEmpty().withMessage('Name is required'),
+    body('href').isString().withMessage('Href must be a string').notEmpty().withMessage('Href is required'),
+    body('price').isString().withMessage('Price must be a string').notEmpty().withMessage('Price is required'),
+    body('imageSrc').isURL().withMessage('ImageSrc must be a valid URL').notEmpty().withMessage('ImageSrc is required'),
+    body('imageAlt').isString().withMessage('ImageAlt must be a string').notEmpty().withMessage('ImageAlt is required')
+];
+
 // Create
-router.post('/', async (req, res) => {
+router.post('/', productValidationRules, async (req, res) => {
+    console.log(req)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const product = new Product(req.body);
         await product.save();
