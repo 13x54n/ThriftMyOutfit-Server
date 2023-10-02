@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
+const productDetailsRouter = require('./routes/productDetailsRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -16,8 +17,9 @@ mongoose.connect(process.env.MONGODB_URL, {
 app.use(cors()); 
 app.use(bodyParser.json());
 app.use(morgan('combined'));
-
+ 
 app.use('/api/v1/products', productRoutes);
+app.use("/api/v1/productDetails", productDetailsRouter)
 
 app.use('*', (req, res) => {
     res.status(404).json({msg: "API endpoint not found!"})
